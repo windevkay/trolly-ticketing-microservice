@@ -6,7 +6,6 @@ import { app } from "./app";
 
 const PORT = 3000;
 
-// connect to the mongo instance in k8s cluster and fire up server!
 const runServer = async () => {
   try {
     await mongoose.connect(`${process.env.MONGO_CLUSTER_ADDRESS}`, {
