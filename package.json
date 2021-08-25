@@ -1,7 +1,7 @@
 {
-  "name": "authservice",
+  "name": "ticketservice",
   "version": "1.0.0",
-  "description": "Auth Microservice for Trolly",
+  "description": "Ticketing Microservice for Trolly",
   "main": "index.ts",
   "scripts": {
     "start": "ts-node-dev --poll src/index.ts",
