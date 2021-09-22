@@ -1,19 +1,21 @@
 import request from "supertest";
+import jwt from "jsonwebtoken";
 import faker from "faker";
 
-import { app } from "../app";
-
-export const signUp = async () => {
-  const testEmail = faker.internet.email();
-  const testPass = faker.internet.password();
-  // signup
-  const response = await request(app)
-    .post("/api/users/signup")
-    .send({
-      email: testEmail,
-      password: testPass,
-    })
-    .expect(201);
-  const cookie = response.get("Set-Cookie");
-  return Promise.resolve({ testEmail, testPass, cookie });
+export const generateCookie = () => {
+  // build a payload
+  const payload = {
+    id: faker.datatype.string(),
+    email: faker.internet.email(),
+  };
+  // generate a signed jwt token
+  const token = jwt.sign(payload, process.env.JWT_KEY!);
+  // build the session object
+  const session = { jwt: token };
+  // turn that into a json string
+  const sessionJSON = JSON.stringify(session);
+  // encode as base64
+  const base64 = Buffer.from(sessionJSON).toString("base64");
+  // return the format it takes in the browser (as array for supertest)
+  return [`express:sess=${base64}`];
 };

@@ -3,7 +3,11 @@ import "express-async-errors";
 import { json } from "body-parser";
 import cookieSession from "cookie-session";
 
-import { errorHandler, NotFoundError } from "@stagefirelabs/common";
+import {
+  errorHandler,
+  NotFoundError,
+  currentUser,
+} from "@stagefirelabs/common";
 
 import { ticketingRouter } from "./routes/ticketing.route";
 
@@ -17,6 +21,8 @@ app.use(
     secure: process.env.NODE_ENV !== "test", // only send over https
   })
 );
+// check jwt token availability
+app.use(currentUser);
 
 app.use("/api/tickets", ticketingRouter);
 

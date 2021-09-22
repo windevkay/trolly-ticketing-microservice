@@ -8,7 +8,7 @@ const PORT = 3000;
 
 const runServer = async () => {
   try {
-    await mongoose.connect(`${process.env.MONGO_CLUSTER_ADDRESS}`, {
+    await mongoose.connect(`${process.env.MONGO_URI}`, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
       useCreateIndex: true,
