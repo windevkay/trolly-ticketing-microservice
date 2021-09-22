@@ -1,6 +1,10 @@
 import express, { Router, Request, Response } from "express";
 import { body } from "express-validator";
-import { requireAuth, validateRequest } from "@stagefirelabs/common";
+import {
+  requireAuth,
+  validateRequest,
+  NotFoundError,
+} from "@stagefirelabs/common";
 
 import { Ticket } from "../models/ticket.model";
 
@@ -27,5 +31,20 @@ router.post(
     res.status(201).send(ticket);
   }
 );
+
+router.get("/:id", async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const ticket = await Ticket.findById(id).exec();
+  if (!ticket) {
+    throw new NotFoundError();
+  }
+
+  res.send(ticket);
+});
+
+router.get("/", async (req: Request, res: Response) => {
+  const tickets = await Ticket.find({});
+  res.send(tickets);
+});
 
 export { router as ticketingRouter };
