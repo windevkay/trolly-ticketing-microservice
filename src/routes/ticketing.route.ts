@@ -5,6 +5,7 @@ import {
   validateRequest,
   NotFoundError,
   NotAuthorizedError,
+  BadRequestError,
 } from "@stagefirelabs/common";
 
 import { Ticket } from "../models/ticket.model";
@@ -36,6 +37,7 @@ router.post(
     await ticket.save();
     await new TicketCreatedPublisher(natsWrapper.client).publish({
       id: ticket.id,
+      version: ticket.version,
       title: ticket.title,
       price: ticket.price,
       userId: ticket.userId,
@@ -75,6 +77,10 @@ router.put(
     if (!ticket) {
       throw new NotFoundError();
     }
+    // if a ticket has been ordered, we need to lock it down from any updates
+    if (ticket.orderId) {
+      throw new BadRequestError("Cannot edit a reserved Ticket");
+    }
     if (ticket.userId !== req.currentUser!.id) {
       throw new NotAuthorizedError();
     }
@@ -85,6 +91,7 @@ router.put(
     await ticket.save();
     await new TicketUpdatedPublisher(natsWrapper.client).publish({
       id: ticket.id,
+      version: ticket.version,
       title: ticket.title,
       price: ticket.price,
       userId: ticket.userId,
